@@ -1,0 +1,14 @@
+{
+  "name": "ggcrafter",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"npm run dev -w @ggcrafter/api\" \"npm run dev -w @ggcrafter/web\"",
+    "build": "npm run build -w @ggcrafter/api && npm run build -w @ggcrafter/web",
+    "db:generate": "npm run prisma:generate -w @ggcrafter/api",
+    "db:migrate": "npm run prisma:migrate -w @ggcrafter/api",
+    "db:seed": "npm run prisma:seed -w @ggcrafter/api"
+  },
+  "devDependencies": {"concurrently": "^9.1.2"}
+}
