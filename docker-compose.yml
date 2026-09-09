@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ggcrafter
+      POSTGRES_PASSWORD: ggcrafter
+      POSTGRES_DB: ggcrafter
+    ports: ["5432:5432"]
+    volumes: ["ggcrafter-postgres:/var/lib/postgresql/data"]
+volumes:
+  ggcrafter-postgres:

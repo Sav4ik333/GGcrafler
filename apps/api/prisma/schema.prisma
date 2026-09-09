@@ -1,0 +1,74 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+model User {
+  id String @id @default(cuid())
+  telegramId BigInt @unique
+  username String?
+  displayName String
+  avatarUrl String?
+  balance Int @default(1250)
+  createdAt DateTime @default(now())
+  inventory Inventory[]
+  promoUses PromoCodeUse[]
+  crafts CraftHistory[]
+}
+model Skin {
+  id String @id @default(cuid())
+  name String @unique
+  price Int
+  imageUrl String
+  description String @default("")
+  rarity String @default("Common")
+  active Boolean @default(true)
+  craftEnabled Boolean @default(true)
+  craftWeight Int @default(100)
+  createdAt DateTime @default(now())
+  inventory Inventory[]
+  crafted CraftHistory[] @relation("CraftResult")
+}
+model Inventory {
+  id String @id @default(cuid())
+  userId String
+  skinId String
+  obtainedAt DateTime @default(now())
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  skin Skin @relation(fields:[skinId], references:[id])
+  @@index([userId])
+}
+model PromoCode {
+  id String @id @default(cuid())
+  code String @unique
+  reward Int
+  usageLimit Int
+  usesCount Int @default(0)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  uses PromoCodeUse[]
+}
+model PromoCodeUse {
+  id String @id @default(cuid())
+  promoId String
+  userId String
+  usedAt DateTime @default(now())
+  promo PromoCode @relation(fields:[promoId],references:[id],onDelete:Cascade)
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@unique([promoId,userId])
+}
+model CraftHistory {
+  id String @id @default(cuid())
+  userId String
+  usedSkinIds String[]
+  resultSkinId String
+  inputValue Int
+  resultValue Int
+  createdAt DateTime @default(now())
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  resultSkin Skin @relation("CraftResult",fields:[resultSkinId],references:[id])
+}
+model RequestLock {
+  id String @id
+  userId String
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
